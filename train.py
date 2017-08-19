@@ -70,8 +70,10 @@ if __name__ == '__main__':
 
     for i in range(10):
         g = G2048()
-        while not g.is_finished:
+        for t in range(200):
             action = agent.act(g.board)
             g.move(action)
+            if g.is_finished:
+                break
         print('{;d}: score: {;d}'.format(i, g.score))
         agent.stop_episode()
