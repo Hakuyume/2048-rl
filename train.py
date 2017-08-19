@@ -66,10 +66,12 @@ if __name__ == '__main__':
             action = agent.act_and_train(game.board, reward)
             prev = game.score
             game.move(action)
-            reward = game.score - prev
+            reward = np.log(1 + game.score - prev)
         print(
-            '{:d}: score: {:d}, stat: {}'
-            .format(i, game.score, agent.get_statistics()))
+            '{:d}: score: {:d}, max: {:d}, stat: {}'
+            .format(
+                i, game.score,
+                1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(game.board, reward, True)
 
     for i in range(10):
@@ -80,5 +82,6 @@ if __name__ == '__main__':
             else:
                 action = random_action()
             game.move(action)
-        print('{:d}: score: {:d}'.format(i, game.score))
+        print('{:d}: score: {:d}, max: {:d}'.format(
+            i, game.score, 1 << game.board.max()))
         agent.stop_episode()
