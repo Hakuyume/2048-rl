@@ -35,6 +35,11 @@ if __name__ == '__main__':
     parser.add_argument('--units', type=int, default=64)
     args = parser.parse_args()
 
+    game = G2048()
+
+    def random_action():
+        return random.choice(np.nonzero(game.is_movable)[0])
+
     model = MLP(args.units)
     model(np.zeros((1, 4, 4)))
 
@@ -47,8 +52,7 @@ if __name__ == '__main__':
 
     gamma = 0.95
     explorer = chainerrl.explorers.ConstantEpsilonGreedy(
-        epsilon=0.3,
-        random_action_func=lambda: random.randrange(4))
+        epsilon=0.3, random_action_func=random_action)
     replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity=1 << 20)
     agent = chainerrl.agents.DoubleDQN(
         model, optimizer, replay_buffer, gamma, explorer,
@@ -56,25 +60,25 @@ if __name__ == '__main__':
         target_update_interval=100)
 
     for i in range(args.episodes):
-        g = G2048()
+        game.reset()
         reward = 0
-        while not g.is_finished:
-            action = agent.act_and_train(g.board, reward)
-            prev = g.score
-            g.move(action)
-            reward = g.score - prev
+        while not game.is_finished:
+            action = agent.act_and_train(game.board, reward)
+            prev = game.score
+            game.move(action)
+            reward = game.score - prev
         print(
             '{:d}: score: {:d}, stat: {}'
-            .format(i, g.score, agent.get_statistics()))
-        agent.stop_episode_and_train(g.board, reward, True)
+            .format(i, game.score, agent.get_statistics()))
+        agent.stop_episode_and_train(game.board, reward, True)
 
     for i in range(10):
-        g = G2048()
-        while not g.is_finished:
+        game.reset()
+        while not game.is_finished:
             if random.uniform(0, 1) > 1 / 100:
-                action = agent.act(g.board)
+                action = agent.act(game.board)
             else:
-                action = random.randrange(4)
-            g.move(action)
-        print('{:d}: score: {:d}'.format(i, g.score))
+                action = random_action()
+            game.move(action)
+        print('{:d}: score: {:d}'.format(i, game.score))
         agent.stop_episode()

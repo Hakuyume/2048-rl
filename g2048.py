@@ -6,23 +6,29 @@ class G2048(object):
 
     def __init__(self, size=4):
         self.size = size
-        self.score = 0
-        self.board = np.zeros((size, size), dtype=np.uint8)
+        self.board = np.empty((size, size), dtype=np.uint8)
 
+    def reset(self):
+        self.score = 0
+        self.board[:] = 0
         for _ in range(2):
             self._add()
 
     @property
+    def is_movable(self):
+        movabilty = np.zeros(4, dtype=bool)
+        for d in range(4):
+            board = np.rot90(self.board, d)
+            if np.logical_and(board[:, :-1] == 0, board[:, 1:] > 0).any():
+                movabilty[d] = True
+            elif np.logical_and(
+                    board[:, :-1] > 0, board[:, :-1] == board[:, 1:]).any():
+                movabilty[d] = True
+        return movabilty
+
+    @property
     def is_finished(self):
-        for u in range(self.size):
-            for v in range(self.size):
-                if self.board[u, v] == 0:
-                    return False
-                if u > 0 and self.board[u - 1, v] == self.board[u, v]:
-                    return False
-                if v > 0 and self.board[u, v - 1] == self.board[u, v]:
-                    return False
-        return True
+        return not self.is_movable.any()
 
     def _add(self):
         blank = tuple(zip(*np.where(self.board == 0)))
