@@ -75,5 +75,5 @@ if __name__ == '__main__':
             g.move(action)
             if g.is_finished:
                 break
-        print('{;d}: score: {;d}'.format(i, g.score))
+        print('{:d}: score: {:d}'.format(i, g.score))
         agent.stop_episode()
