@@ -72,6 +72,7 @@ if __name__ == '__main__':
         g = G2048()
         for t in range(1000):
             action = agent.act(g.board)
+            print(i, action)
             g.move(action)
             if g.is_finished:
                 break
