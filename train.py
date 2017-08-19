@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     for i in range(10):
         g = G2048()
-        for t in range(200):
+        for t in range(1000):
             action = agent.act(g.board)
             g.move(action)
             if g.is_finished:
