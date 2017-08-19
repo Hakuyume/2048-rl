@@ -64,9 +64,9 @@ if __name__ == '__main__':
         reward = 0
         while not game.is_finished:
             action = agent.act_and_train(game.board, reward)
-            prev = game.score
+            prev = game.board.max()
             game.move(action)
-            reward = np.log(1 + game.score - prev)
+            reward = game.board.max() - prev
         print(
             '{:d}: score: {:d}, max: {:d}, stat: {}'
             .format(
