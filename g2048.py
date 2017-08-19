@@ -15,20 +15,20 @@ class G2048(object):
             self._add()
 
     @property
-    def is_movable(self):
-        movabilty = np.zeros(4, dtype=bool)
+    def movability(self):
+        m = np.zeros(4, dtype=bool)
         for d in range(4):
             board = np.rot90(self.board, d)
             if np.logical_and(board[:, :-1] == 0, board[:, 1:] > 0).any():
-                movabilty[d] = True
+                m[d] = True
             elif np.logical_and(
                     board[:, :-1] > 0, board[:, :-1] == board[:, 1:]).any():
-                movabilty[d] = True
-        return movabilty
+                m[d] = True
+        return m
 
     @property
     def is_finished(self):
-        return not self.is_movable.any()
+        return not self.movability.any()
 
     def _add(self):
         blank = tuple(zip(*np.where(self.board == 0)))

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     game = G2048()
 
     def random_action():
-        return random.choice(np.nonzero(game.is_movable)[0])
+        return random.choice(np.nonzero(game.movability)[0])
 
     model = MLP(args.units)
     model(np.zeros((1, 4, 4)))
