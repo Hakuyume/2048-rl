@@ -3,29 +3,22 @@ import numpy as np
 import random
 
 import chainer
-import chainer.functions as F
-import chainer.links as L
 import chainerrl
 
 from g2048 import G2048
+from net import MLP
 
 
-class MLP(chainer.Chain):
+class Agent(chainer.Chain):
 
-    def __init__(self, n_unit):
+    def __init__(self, model):
         super().__init__()
         with self.init_scope():
-            self.l1 = L.Linear(n_unit)
-            self.l2 = L.Linear(n_unit)
-            self.l3 = L.Linear(4)
+            self.model = model
 
     def __call__(self, x):
-        xp = self.xp
-        h = (x[:, np.newaxis] == xp.arange(16)[:, np.newaxis, np.newaxis]) \
-            .astype(np.float32)
-        h = F.relu(self.l1(h))
-        h = F.relu(self.l2(h))
-        return chainerrl.action_value.DiscreteActionValue(self.l3(h))
+        h = self.model(x)
+        return chainerrl.action_value.DiscreteActionValue(h)
 
 
 if __name__ == '__main__':
@@ -40,7 +33,7 @@ if __name__ == '__main__':
     def random_action():
         return random.choice(np.nonzero(game.movability)[0])
 
-    model = MLP(args.units)
+    model = Agent(MLP())
     model(np.zeros((1, 4, 4)))
 
     if args.gpu >= 0:
