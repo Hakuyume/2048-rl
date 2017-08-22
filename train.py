@@ -69,6 +69,8 @@ if __name__ == '__main__':
                 1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
+    agent.save('agent')
+
     for i in range(10):
         game.reset()
         while not game.is_finished:
@@ -80,5 +82,3 @@ if __name__ == '__main__':
         print('{:d}: score: {:d}, max: {:d}'.format(
             i, game.score, 1 << game.board.max()))
         agent.stop_episode()
-
-    agent.save('agent')
