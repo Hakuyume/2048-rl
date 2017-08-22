@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import os
 import random
 
 import chainer
@@ -50,6 +51,9 @@ if __name__ == '__main__':
         model, optimizer, replay_buffer, gamma, explorer,
         replay_start_size=500, update_interval=1,
         target_update_interval=100)
+
+    if os.path.exists('agent') and os.path.isdir('agent'):
+        agent.load('agent')
 
     for i in range(args.episodes):
         game.reset()
