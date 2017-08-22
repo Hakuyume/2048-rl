@@ -58,8 +58,14 @@ if __name__ == '__main__':
         while not game.is_finished:
             action = agent.act_and_train(game.board, reward)
             prev = game.board.max()
-            game.move(action)
-            reward = game.board.max() - prev
+            if game.movability[action]:
+                game.move(action)
+                if game.board.max() > prev:
+                    reward = 1 << game.board.max()
+                else:
+                    reward = 0
+            else:
+                reward = -1
         print(
             '{:d}: score: {:d}, max: {:d}, stat: {}'
             .format(
