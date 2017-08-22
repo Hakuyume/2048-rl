@@ -73,7 +73,7 @@ if __name__ == '__main__':
                 1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
-        if i % 1000 == 0:
+        if (i + 1) % 1000 == 0:
             agent.save('agent')
 
             for _ in range(10):
