@@ -74,7 +74,7 @@ if __name__ == '__main__':
     for i in range(10):
         game.reset()
         while not game.is_finished:
-            action = agent.act(game.board)
+            action = agent.act(game.board.copy())
             if not game.movability[action]:
                 action = random_action()
             game.move(action)
