@@ -36,7 +36,12 @@ class Dataset(chainer.dataset.DatasetMixin):
 
     def get_example(self, i):
         game = G2048()
+        game.reset()
         game.board[:] = np.random.randint(0, 16, size=game.board.shape)
+
+        d = np.random.randint(0, 3)
+        while game.movability[d]:
+            game.move(d)
         return game.board, game.movability
 
 
