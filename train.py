@@ -74,9 +74,8 @@ if __name__ == '__main__':
     for i in range(10):
         game.reset()
         while not game.is_finished:
-            if random.uniform(0, 1) > 1 / 100:
-                action = agent.act(game.board)
-            else:
+            action = agent.act(game.board)
+            if not game.movability[action]:
                 action = random_action()
             game.move(action)
         print('{:d}: score: {:d}, max: {:d}'.format(
