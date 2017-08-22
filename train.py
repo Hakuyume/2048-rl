@@ -56,13 +56,10 @@ if __name__ == '__main__':
         reward = 0
         while not game.is_finished:
             action = agent.act_and_train(game.board.copy(), reward)
-            prev = game.board.max()
             if game.movability[action]:
+                prev = game.board.score
                 game.move(action)
-                if game.board.max() > prev:
-                    reward = 1 << game.board.max()
-                else:
-                    reward = 0
+                reward = game.board.score - prev
             else:
                 reward = -1
         print(
@@ -70,7 +67,7 @@ if __name__ == '__main__':
             .format(
                 i, game.score,
                 1 << game.board.max(), agent.get_statistics()))
-        agent.stop_episode_and_train(game.board.copy(), reward, True)
+        agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
     for i in range(10):
         game.reset()
