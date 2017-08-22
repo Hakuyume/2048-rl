@@ -25,7 +25,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--episodes', type=int, default=100)
-    parser.add_argument('--units', type=int, default=64)
     args = parser.parse_args()
 
     game = G2048()
