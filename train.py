@@ -73,15 +73,16 @@ if __name__ == '__main__':
                 1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
-    agent.save('agent')
+        if i % 1000 == 0:
+            agent.save('agent')
 
-    for i in range(10):
-        game.reset()
-        while not game.is_finished:
-            action = agent.act(game.board.copy())
-            if not game.movability[action]:
-                action = random_action()
-            game.move(action)
-        print('{:d}: score: {:d}, max: {:d}'.format(
-            i, game.score, 1 << game.board.max()))
-        agent.stop_episode()
+            for _ in range(10):
+                game.reset()
+                while not game.is_finished:
+                    action = agent.act(game.board.copy())
+                    if not game.movability[action]:
+                        action = random_action()
+                    game.move(action)
+                print('Test: score: {:d}, max: {:d}'.format(
+                    game.score, 1 << game.board.max()))
+                agent.stop_episode()
