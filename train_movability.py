@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     print(
         'chance rate: ',
-        sum(dataset[i][0].mean() for i in range(len(dataset))) / len(dataset))
+        sum(dataset[i][1].mean() for i in range(len(dataset))) / len(dataset))
 
     updater = chainer.training.StandardUpdater(
         iter_, optimizer, device=args.gpu)
