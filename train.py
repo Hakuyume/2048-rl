@@ -57,9 +57,9 @@ if __name__ == '__main__':
         while not game.is_finished:
             action = agent.act_and_train(game.board.copy(), reward)
             if game.movability[action]:
-                prev = game.board.score
+                prev = game.score
                 game.move(action)
-                reward = game.board.score - prev
+                reward = game.score - prev
             else:
                 reward = -1
         print(
