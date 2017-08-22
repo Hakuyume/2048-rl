@@ -24,7 +24,7 @@ class Agent(chainer.Chain):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
-    parser.add_argument('--episodes', type=int, default=100)
+    parser.add_argument('--episodes', type=int, default=10000)
     args = parser.parse_args()
 
     game = G2048()
@@ -80,3 +80,5 @@ if __name__ == '__main__':
         print('{:d}: score: {:d}, max: {:d}'.format(
             i, game.score, 1 << game.board.max()))
         agent.stop_episode()
+
+    agent.save('agent')
