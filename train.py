@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     gamma = 0.95
     explorer = chainerrl.explorers.ConstantEpsilonGreedy(
-        epsilon=0.3, random_action_func=random_action)
+        epsilon=0.1, random_action_func=random_action)
     replay_buffer = chainerrl.replay_buffer.ReplayBuffer(capacity=1 << 20)
     agent = chainerrl.agents.DoubleDQN(
         model, optimizer, replay_buffer, gamma, explorer,
