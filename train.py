@@ -62,16 +62,19 @@ if __name__ == '__main__':
         replay_start_size=500, update_interval=1,
         target_update_interval=100)
 
-    episode = 0
-
     if args.resume:
         agent.load(args.resume)
         replay_buffer.load(os.path.join(args.resume, 'replay_buffer.pkl'))
-        misc = np.load(os.path.join(args.resume, 'misc.npz'))
-        episode = misc['episode']
+        misc = dict(np.load(os.path.join(args.resume, 'misc.npz')))
+    else:
+        misc = {
+            'episode': 0,
+            'best_score': 0,
+            'best_panel': 0,
+        }
 
     while True:
-        episode += 1
+        misc['episode'] += 1
 
         game.reset()
         reward = 0
@@ -83,18 +86,26 @@ if __name__ == '__main__':
                 reward = game.score - prev
             else:
                 reward = -1
-        print(
-            '{:d}: score: {:d}, max: {:d}, stat: {}'
-            .format(
-                episode, game.score,
-                1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(
             game.board.copy(), reward - game.score / 2, True)
 
-        if episode % 1000 == 0:
+        if misc['best_score'] < game.score:
+            misc['best_score'] = game.score
+            misc['best_panel'] = game.board.max()
+
+        print(
+            '{:d}: score: {:d}, panel: {:d}, '
+            'best_score: {:d}, best_panel: {:d}, '
+            'stat: {}'
+            .format(
+                misc['episode'], game.score, 1 << game.board.max(),
+                misc['best_score'], 1 << misc['best_panel'],
+                agent.get_statistics()))
+
+        if misc['episode'] % 1000 == 0:
             agent.save(args.out)
             replay_buffer.save(os.path.join(args.out, 'replay_buffer.pkl'))
-            np.savez(os.path.join(args.out, 'misc.npz'), episode=episode)
+            np.savez(os.path.join(args.out, 'misc.npz'), **misc)
 
             for _ in range(10):
                 game.reset()
