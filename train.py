@@ -88,7 +88,8 @@ if __name__ == '__main__':
             .format(
                 episode, game.score,
                 1 << game.board.max(), agent.get_statistics()))
-        agent.stop_episode_and_train(game.board.copy(), -game.score, True)
+        agent.stop_episode_and_train(
+            game.board.copy(), reward - game.score / 2, True)
 
         if episode % 1000 == 0:
             agent.save(args.out)
