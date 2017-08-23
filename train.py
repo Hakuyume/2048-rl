@@ -7,7 +7,7 @@ import chainer
 import chainerrl
 
 from g2048 import G2048
-from net import Net
+from net import CNN
 
 
 class Agent(chainer.Chain):
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     def random_action():
         return random.choice(np.nonzero(game.movability)[0])
 
-    model = Agent(Net())
+    model = Agent(CNN())
     model(np.zeros((1, 4, 4)))
 
     if args.gpu >= 0:

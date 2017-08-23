@@ -5,7 +5,7 @@ import chainer.functions as F
 import chainer.links as L
 
 
-class Net(chainer.Chain):
+class CNN(chainer.Chain):
 
     def __init__(self, n_channel=256):
         super().__init__()

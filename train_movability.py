@@ -6,7 +6,7 @@ import chainer.functions as F
 from chainer.training import extensions
 
 from g2048 import G2048
-from net import Net
+from net import CNN
 
 
 class MultiLabelClassifier(chainer.Chain):
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume')
     args = parser.parse_args()
 
-    model = MultiLabelClassifier(Net())
+    model = MultiLabelClassifier(CNN())
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
