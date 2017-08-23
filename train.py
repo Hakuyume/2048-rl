@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--init')
     parser.add_argument('--resume')
-    parser.add_argument('--out', result='agent')
+    parser.add_argument('--out', default='agent')
     parser.add_argument('--episodes', type=int, default=10000)
     args = parser.parse_args()
 
