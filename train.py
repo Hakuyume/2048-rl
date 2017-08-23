@@ -26,6 +26,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--init')
+    parser.add_argument('--resume')
+    parser.add_argument('--out', result='agent')
     parser.add_argument('--episodes', type=int, default=10000)
     args = parser.parse_args()
 
@@ -56,8 +58,8 @@ if __name__ == '__main__':
         replay_start_size=500, update_interval=1,
         target_update_interval=100)
 
-    if os.path.exists('agent') and os.path.isdir('agent'):
-        agent.load('agent')
+    if args.resume:
+        agent.load(args.resume)
 
     for i in range(args.episodes):
         game.reset()
@@ -78,7 +80,7 @@ if __name__ == '__main__':
         agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
         if (i + 1) % 1000 == 0:
-            agent.save('agent')
+            agent.save(args.out)
 
             for _ in range(10):
                 game.reset()
