@@ -46,8 +46,13 @@ if __name__ == '__main__':
         chainer.cuda.get_device(args.gpu).use()
         model.to_gpu()
 
-    optimizer = chainer.optimizers.Adam(eps=1e-2)
-    optimizer.setup(model)
+    if args.init:
+        optimizer = chainer.optimizers.MomentumSGD(lr=0.01)
+        optimizer.setup(model)
+        optimizer.add_hook(chainer.optimizer.WeightDecay(5e-4))
+    else:
+        optimizer = chainer.optimizers.Adam(eps=1e-2)
+        optimizer.setup(model)
 
     gamma = 0.95
     explorer = chainerrl.explorers.ConstantEpsilonGreedy(
