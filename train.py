@@ -81,10 +81,13 @@ if __name__ == '__main__':
 
         random_board = random.uniform(0, 1) < args.random_board
         if random_board:
-            b = np.random.randint(
-                0, misc['best_panel'], size=game.board.shape)
-            game.score = ((1 << b) * (b - 1) * (b > 0)).sum()
-            game.board[:] = b
+            while True:
+                b = np.random.randint(
+                    0, misc['best_panel'], size=game.board.shape)
+                game.score = ((1 << b) * (b - 1) * (b > 0)).sum()
+                game.board[:] = b
+                if not game.is_finished:
+                    break
 
         reward = 0
         while not game.is_finished:
