@@ -25,6 +25,7 @@ class Agent(chainer.Chain):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
+    parser.add_argument('--init')
     parser.add_argument('--episodes', type=int, default=10000)
     args = parser.parse_args()
 
@@ -34,7 +35,10 @@ if __name__ == '__main__':
         return random.choice(np.nonzero(game.movability)[0])
 
     model = Agent(CNN())
-    model(np.zeros((1, 4, 4)))
+    if args.init:
+        chainer.serializers.load_npz(args.init, model.model)
+    else:
+        model.model(np.zeros((1, 4, 4)))
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
