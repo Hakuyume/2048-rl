@@ -27,6 +27,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--init')
     parser.add_argument('--resume')
+    parser.add_argument('--random_board', type=float, default=0)
     parser.add_argument('--out', default='agent')
     args = parser.parse_args()
 
@@ -77,6 +78,14 @@ if __name__ == '__main__':
         misc['episode'] += 1
 
         game.reset()
+
+        random_board = random.uniform(0, 1) < args.random_board
+        if random_board:
+            b = np.random.randint(
+                0, misc['best_panel'], size=game.board.shape)
+            game.score = ((1 << b) * (b - 1) * (b > 0)).sum()
+            game.board[:] = b
+
         reward = 0
         while not game.is_finished:
             action = agent.act_and_train(game.board.copy(), reward)
@@ -89,7 +98,7 @@ if __name__ == '__main__':
         agent.stop_episode_and_train(
             game.board.copy(), reward - game.score / 2, True)
 
-        if misc['best_score'] < game.score:
+        if not random_board and misc['best_score'] < game.score:
             misc['best_score'] = game.score
             misc['best_panel'] = game.board.max()
 
