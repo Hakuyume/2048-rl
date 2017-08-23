@@ -82,13 +82,10 @@ if __name__ == '__main__':
 
         random_board = random.uniform(0, 1) < args.random_board
         if random_board:
-            while True:
-                b = np.random.randint(
-                    0, misc['best_panel'], size=game.board.shape)
-                game.score = ((1 << b) * (b - 1) * (b > 0)).sum()
-                game.board[:] = b
-                if not game.is_finished:
-                    break
+            b = np.random.randint(
+                0, misc['best_panel'], size=game.board.shape)
+            game.score = ((1 << b) * (b - 1) * (b > 0)).sum()
+            game.board[:] = b
 
         reward = 0
         while not game.is_finished:
@@ -99,21 +96,25 @@ if __name__ == '__main__':
                 reward = game.score - prev
             else:
                 reward = -1
-        agent.stop_episode_and_train(
-            game.board.copy(), reward - game.score / 2, True)
+        try:
+            agent.stop_episode_and_train(
+                game.board.copy(), reward - game.score / 2, True)
 
-        if not random_board and misc['best_score'] < game.score:
-            misc['best_score'] = game.score
-            misc['best_panel'] = game.board.max()
+            if not random_board and misc['best_score'] < game.score:
+                misc['best_score'] = game.score
+                misc['best_panel'] = game.board.max()
 
-        print(
-            '{:d}: score: {:d}, panel: {:d}, '
-            'best_score: {:d}, best_panel: {:d}, '
-            'stat: {}'
-            .format(
-                misc['episode'], game.score, 1 << game.board.max(),
-                misc['best_score'], 1 << misc['best_panel'],
-                agent.get_statistics()))
+            print(
+                '{:d}: score: {:d}, panel: {:d}, '
+                'best_score: {:d}, best_panel: {:d}, '
+                'stat: {}'
+                .format(
+                    misc['episode'], game.score, 1 << game.board.max(),
+                    misc['best_score'], 1 << misc['best_panel'],
+                    agent.get_statistics()))
+
+        except AssertionError:
+            pass
 
         if misc['episode'] % 1000 == 0:
             agent.save(args.out)
