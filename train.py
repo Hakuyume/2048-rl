@@ -66,7 +66,8 @@ if __name__ == '__main__':
     if args.resume:
         agent.load(args.resume)
         replay_buffer.load(os.path.join(args.resume, 'replay_buffer.pkl'))
-        misc = dict(np.load(os.path.join(args.resume, 'misc.npz')))
+        misc = np.load(os.path.join(args.resume, 'misc.npz'))
+        misc = {key: int(misc[key]) for key in misc.files}
     else:
         misc = {
             'episode': 0,
