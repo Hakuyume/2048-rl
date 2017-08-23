@@ -20,11 +20,11 @@ class CNN(chainer.Chain):
             .astype(np.float32)
         h = F.relu(self.conv1(h))
         h = self.conv2(h)
-        h = _global_average_pooling_2d(h)
+        h = _global_max_pooling_2d(h)
         return F.reshape(h, (-1, 4))
 
 
-def _global_average_pooling_2d(x):
-    h = F.mean(x, axis=2, keepdims=True)
-    h = F.mean(h, axis=3, keepdims=True)
+def _global_max_pooling_2d(x):
+    h = F.max(x, axis=2, keepdims=True)
+    h = F.max(h, axis=3, keepdims=True)
     return h
