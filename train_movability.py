@@ -49,8 +49,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--batchsize', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=0.1)
-    parser.add_argument('--resume')
+    parser.add_argument('--out', default='result')
     args = parser.parse_args()
 
     model = MultiLabelClassifier(CNN())
@@ -59,7 +58,7 @@ if __name__ == '__main__':
         chainer.cuda.get_device(args.gpu).use()
         model.to_gpu()
 
-    optimizer = chainer.optimizers.MomentumSGD(lr=args.lr)
+    optimizer = chainer.optimizers.MomentumSGD()
     optimizer.setup(model)
     optimizer.add_hook(chainer.optimizer.WeightDecay(5e-4))
 
@@ -72,7 +71,16 @@ if __name__ == '__main__':
 
     updater = chainer.training.StandardUpdater(
         iter_, optimizer, device=args.gpu)
-    trainer = chainer.training.Trainer(updater)
+    trainer = chainer.training.Trainer(
+        updater, (15000, 'iteration'), out=args.out)
+    trainer.extend(
+        extensions.snapshot_object(
+            model.model, filename='model_iter_{.updater.iteration}'),
+        trigger=(15000, 'iteration'))
+
+    trainer.extend(
+        extensions.ExponentialShift('lr', 0.1, init=0.1),
+        trigger=(10000, 'iteration'))
 
     log_interval = (10, 'iteration')
     trainer.extend(extensions.observe_lr(), trigger=log_interval)
@@ -81,10 +89,6 @@ if __name__ == '__main__':
     trainer.extend(
         extensions.PrintReport(
             ['iteration', 'lr', 'main/loss', 'main/accuracy']))
-    trainer.extend(
-        extensions.snapshot(), trigger=(10000, 'iteration'))
-
-    if args.resume:
-        chainer.serializers.load_npz(args.resume, trainer)
+    trainer.extend(extensions.ProgressBar(update_interval=10))
 
     trainer.run()
