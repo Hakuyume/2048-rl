@@ -20,6 +20,11 @@ class Net(chainer.Chain):
             .astype(np.float32)
         h = F.relu(self.conv1(h))
         h = self.conv2(h)
-        h = F.max_pooling_2d(h, 4, stride=4)
-        y = F.reshape(h, (-1, 4))
-        return y
+        h = _global_max_pooling_2d(h)
+        return F.reshape(h, (-1, 4))
+
+
+def _global_max_pooling_2d(x):
+    h = F.max(x, axis=2, keepdims=True)
+    h = F.max(h, axis=3, keepdims=True)
+    return h
