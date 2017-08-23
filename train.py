@@ -28,7 +28,6 @@ if __name__ == '__main__':
     parser.add_argument('--init')
     parser.add_argument('--resume')
     parser.add_argument('--out', default='agent')
-    parser.add_argument('--episodes', type=int, default=10000)
     args = parser.parse_args()
 
     game = G2048()
@@ -63,10 +62,17 @@ if __name__ == '__main__':
         replay_start_size=500, update_interval=1,
         target_update_interval=100)
 
+    episode = 0
+
     if args.resume:
         agent.load(args.resume)
+        replay_buffer.load(os.path.join(args.resume, 'replay_buffer.pkl'))
+        misc = np.load(os.path.join(args.resume, 'misc.npz'))
+        episode = misc['episode']
 
-    for i in range(args.episodes):
+    while True:
+        episode += 1
+
         game.reset()
         reward = 0
         while not game.is_finished:
@@ -80,12 +86,14 @@ if __name__ == '__main__':
         print(
             '{:d}: score: {:d}, max: {:d}, stat: {}'
             .format(
-                i, game.score,
+                episode, game.score,
                 1 << game.board.max(), agent.get_statistics()))
         agent.stop_episode_and_train(game.board.copy(), -game.score, True)
 
-        if (i + 1) % 1000 == 0:
+        if episode % 1000 == 0:
             agent.save(args.out)
+            replay_buffer.save(os.path.join(args.out, 'replay_buffer.pkl'))
+            np.savez(os.path.join(args.out, 'misc.npz'), episode=episode)
 
             for _ in range(10):
                 game.reset()
