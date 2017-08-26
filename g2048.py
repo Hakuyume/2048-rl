@@ -64,3 +64,10 @@ class G2048(object):
 
         if change:
             self._add()
+
+    def normalize(self):
+        self.board[:] = min(
+            (np.rot90(b, r)
+             for b in (self.board, self.board.transpose())
+             for r in range(4)),
+            key=lambda b: tuple(b.flatten()))

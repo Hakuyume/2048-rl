@@ -28,8 +28,9 @@ class MultiLabelClassifier(chainer.Chain):
 
 class Dataset(chainer.dataset.DatasetMixin):
 
-    def __init__(self, n_sample):
+    def __init__(self, n_sample, boardnorm=False):
         self.n_sample = n_sample
+        self.boardnorm = boardnorm
 
     def __len__(self):
         return self.n_sample
@@ -42,6 +43,10 @@ class Dataset(chainer.dataset.DatasetMixin):
         d = np.random.randint(0, 3)
         while game.movability[d]:
             game.move(d)
+
+        if self.boardnorm:
+            game.normalize()
+
         return game.board, game.movability
 
 
@@ -49,6 +54,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--batchsize', type=int, default=32)
+    parser.add_argument('--boardnorm', action='store_true')
     parser.add_argument('--out', default='result')
     args = parser.parse_args()
 
@@ -62,7 +68,7 @@ if __name__ == '__main__':
     optimizer.setup(model)
     optimizer.add_hook(chainer.optimizer.WeightDecay(5e-4))
 
-    dataset = Dataset(2048)
+    dataset = Dataset(2048, args.boardnorm)
     iter_ = chainer.iterators.SerialIterator(dataset, args.batchsize)
 
     print(
