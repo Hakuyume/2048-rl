@@ -28,6 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--init')
     parser.add_argument('--resume')
     parser.add_argument('--random_board', type=float, default=0)
+    parser.add_argument('--boardnorm', action='store_true')
     parser.add_argument('--out', default='agent')
     args = parser.parse_args()
 
@@ -89,6 +90,9 @@ if __name__ == '__main__':
 
         reward = 0
         while not game.is_finished:
+            if args.boardnorm:
+                game.normalize()
+
             action = agent.act_and_train(game.board.copy(), reward)
             if game.movability[action]:
                 prev = game.score
@@ -124,6 +128,8 @@ if __name__ == '__main__':
             for _ in range(10):
                 game.reset()
                 while not game.is_finished:
+                    if args.boardnorm:
+                        game.normalize()
                     action = agent.act(game.board.copy())
                     if not game.movability[action]:
                         action = random_action()
